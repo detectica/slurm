@@ -2,6 +2,7 @@ import sqlite3
 import logging
 from config import config
 import sys
+import json
 
 
 """
@@ -26,6 +27,15 @@ class Schema:
     def getTriggers(self):
         return self.trigger_logic
 
+class Plusses(Schema):
+    name = "pluses"
+    fields = ["name TEXT",
+              "count INT",
+              "reason TEXT"]
+
+    def __init__(self):
+        Schema.__init__(self, Plusses.name, Plusses.fields)
+
 class Learn(Schema):
     name = "learn"
     fields = ["command TEXT",
@@ -40,8 +50,12 @@ class SqliteStore():
         self.con = None
 
         self.learn = self.setupTable(Learn())
+        self.plusses = self.setupTable(Plusses())
 
-        self.tables = {'learn':self.learn}
+        self.tables = {
+            'learn':self.learn,
+            'plusses':self.plusses
+        }
 
     def get_connection(self):
         if not self.con:
@@ -110,6 +124,49 @@ class SqliteStore():
     def unlearn2(command, content):
         con = self.get_connection()
         todo = "DELETE FROM %s WHERE command = '%s' AND content = '%s'" % (self.learn.getName(), command, content)
-        logging.debur(todo)
+        logging.debug(todo)
         con.execute(todo)
         con.commit()
+
+
+    """
+      plusses commands
+    """
+    def increment_plusses(self, name, reason = ""):
+        con = self.get_connection()
+        todo = "SELECT count, reason FROM %s WHERE name='%s'" % (self.plusses.getName(), name)
+        logging.debug(todo)
+
+        cur = con.execute(todo)
+        prior = cur.fetchall()
+
+        if len(prior) == 0:
+            count = 1
+            todo = "INSERT INTO %s (name, count, reason) VALUES ('%s', %s, '%s')" % (self.plusses.getName(), name, count, reason)
+            logging.debug(todo)
+            con.execute(todo)
+            con.commit()
+            return 1
+        else:
+            count = prior[0][0] + 1
+            reasons = prior[0][1] + ",%s" % reason
+
+            todo = "UPDATE %s SET count = %s, reason = '%s' WHERE name = '%s'" % (self.plusses.getName(), count, reasons, name)
+            logging.debug(todo)
+            con.execute(todo)
+            con.commit()
+            return count
+
+    def get_plusses(self, name):
+        con = self.get_connection()
+        todo = "SELECT count FROM %s WHERE name = '%s'" % (self.plusses.getName(), name)
+
+        logging.debug(todo)
+        cur = con.execute(todo)
+        con.commit()
+
+        data = cur.fetchall()
+        if len(data) == 0:
+            return 0
+        else:
+            return data[0][0]

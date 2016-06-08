@@ -6,7 +6,7 @@ import logging
 import sys
 
 from learner import Learner
-
+from plusser import Plusser
 
 """
   looks for commands that start with ?
@@ -42,6 +42,17 @@ def handle_command(command, details, channel):
             content = " ".join(details[1:])
     
         response = learner.unlearn(details[0], content)
+
+    elif command == "++" or command == "endorse":
+        plusser = Plusser()
+        reason = ""
+        if len(details) > 1:
+            reason = " ".join(details[1:])
+
+        response = plusser.plus(details[0], reason)
+    elif command == "plusses":
+        plusser = Plusser()
+        response = plusser.get(details[0])
 
     else:
         """
