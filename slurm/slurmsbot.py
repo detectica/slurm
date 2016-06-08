@@ -54,6 +54,10 @@ def handle_command(command, details, channel):
         plusser = Plusser()
         response = plusser.get(details[0])
 
+    elif command == "leaders" or command == "leader_board":
+        plusser = Plusser()
+        response = plusser.leader_board()
+
     else:
         """
           see if a randomly entered command is something that was previously learned

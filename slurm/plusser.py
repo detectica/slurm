@@ -19,3 +19,7 @@ class Plusser():
             return "no plusses just yet for %s" % name
         else:
             return "%s has %s plusses!" % (name, count)
+
+    def leader_board(self):
+        leaders = self.sqlite.plus_leaders()
+        return "plus leaderboard:\n" + "\n".join([": ".join([str(y) for y in x]) for x in leaders])

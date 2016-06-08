@@ -170,3 +170,13 @@ class SqliteStore():
             return 0
         else:
             return data[0][0]
+
+    def plus_leaders(self, limit=20):
+        con = self.get_connection()
+        todo = "SELECT name, count FROM %s ORDER BY count DESC LIMIT %s" % (self.plusses.getName(), limit)
+
+        logging.debug(todo)
+        cur = con.execute(todo)
+        con.commit()
+
+        return [(x[0], x[1]) for x in cur.fetchall()]
