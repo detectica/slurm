@@ -7,6 +7,7 @@ import sys
 
 from learner import Learner
 from plusser import Plusser
+import youtube
 
 """
   looks for commands that start with ?
@@ -58,6 +59,13 @@ def handle_command(command, details, channel):
         plusser = Plusser()
         response = plusser.leader_board()
 
+    elif command == "youtube":
+        query = " ".join(details)
+        videos = youtube.youtube_search(query)
+        if len(videos) > 0:
+            response = videos[0]
+        else:
+            response = "sorry, couldnt find any videos for %s" % query
     else:
         """
           see if a randomly entered command is something that was previously learned
