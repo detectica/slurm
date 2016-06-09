@@ -63,9 +63,11 @@ def handle_command(command, details, channel):
         query = " ".join(details)
         videos = youtube.youtube_search(query)
         if len(videos) > 0:
-            response = videos[0]
+            response = videos[-1]
         else:
             response = "sorry, couldnt find any videos for %s" % query
+    elif command == "echo":
+        response = " ".join(details)
     else:
         """
           see if a randomly entered command is something that was previously learned
@@ -81,15 +83,15 @@ def handle_command(command, details, channel):
 def parse_slack_output(slack_rtm_output):
     """
         The Slack Real Time Messaging API is an events firehose.
-        this parsing function returns None unless a message is
-        directed at the Bot, based on its ID.
+        this parsing function returns None unless a message 
+        starts with ?.
     """
     output_list = slack_rtm_output
     if output_list and len(output_list) > 0:
         for output in output_list:
             if output and 'text' in output and output['text'].startswith("?"):
                 # return text after the @ mention, whitespace removed
-                cleaned = output['text'].strip().lower().split()
+                cleaned = output['text'].strip().split()
                 command = cleaned[0][1:]
 
                 if len(cleaned) > 1:
