@@ -1,3 +1,5 @@
+#!/home/ubuntu/anaconda2/bin/python
+
 import os
 import time
 from slackclient import SlackClient
@@ -7,6 +9,7 @@ import sys
 
 from learner import Learner
 from plusser import Plusser
+from imgur import Imgur
 import youtube
 
 """
@@ -43,6 +46,12 @@ def handle_command(command, details, channel):
             content = " ".join(details[1:])
     
         response = learner.unlearn(details[0], content)
+
+    elif command == "imglearn":
+        learner = Learner()
+        imgur = Imgur()
+        image_url = imgur.save_from_url(" ".join(details[1:]))
+        response = learner.learn(details[0], image_url)
 
     elif command == "++" or command == "endorse":
         plusser = Plusser()
