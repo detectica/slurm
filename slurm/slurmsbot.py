@@ -11,6 +11,7 @@ from learner import Learner
 from plusser import Plusser
 from imgur import Imgur
 import youtube
+from writer import Writer
 
 """
   looks for commands that start with ?
@@ -47,6 +48,9 @@ def handle_command(command, details, channel):
     
         response = learner.unlearn(details[0], content)
 
+    elif command == "write":
+        writer = Writer()
+        response = writer.get_writing(" ".join(details))
     elif command == "imglearn":
         learner = Learner()
         imgur = Imgur()

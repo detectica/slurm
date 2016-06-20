@@ -22,5 +22,5 @@ class Imgur():
 
     def save_from_file(self, file_path):
         logging.debug("trying to save file %s" % file_path)
-        response = self.imgur_client.upload_from_path(clean_path(file_path))
+        response = self.imgur_client.upload_from_path(file_path)
         return (str(response['link']))
