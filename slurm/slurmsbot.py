@@ -20,23 +20,30 @@ from writer import Writer
 
 # starterbot's ID as an environment variable
 BOT_ID = str(os.environ.get("BOT_ID"))
-
-
-# constants
-AT_BOT = "<@" + BOT_ID + ">"
-EXAMPLE_COMMAND = "do"
-
-
-# instantiate Slack & Twilio clients
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 
+def pipe(command, details, channel):    
+    details_string = " ".join(details)
+    components = details_string.split("|")
+    details = [x for x in components.pop(0).split(" ") if x != ""]
+    command = details.pop(0)
 
-def handle_command(command, details, channel):
+    while len(components) > 0:
+        print details
+        response = handle_command(command, details, channel, False)
+        new_components = [x for x in components.pop(0).split(" ") if x != ""]
+        command = new_components.pop(0)
+        details = new_components + response.split(" ")
+
+    handle_command(command, details, channel)
+
+def handle_command(command, details, channel, respond = True):
     """
         Receives commands directed at the bot and determines if they
         are valid commands. If so, then acts on the commands. If not,
         returns back what it needs for clarification.
     """
+    response = False
     if command == "learn":
         learner = Learner()
         response = learner.learn(details[0], " ".join(details[1:]))
@@ -81,6 +88,8 @@ def handle_command(command, details, channel):
             response = "sorry, couldnt find any videos for %s" % query
     elif command == "echo":
         response = " ".join(details)
+    elif command == "pipe":
+        pipe(command, details, channel)
     else:
         """
           see if a randomly entered command is something that was previously learned
@@ -88,9 +97,11 @@ def handle_command(command, details, channel):
         learner = Learner()
         response = learner.get(command)
     
-    if response:
+    if response and respond:
         slack_client.api_call("chat.postMessage", channel=channel,
                               text=response, as_user=True)
+    elif not respond:
+        return response
 
 
 def parse_slack_output(slack_rtm_output):
@@ -103,7 +114,6 @@ def parse_slack_output(slack_rtm_output):
     if output_list and len(output_list) > 0:
         for output in output_list:
             if output and 'text' in output and output['text'].startswith("?"):
-                # return text after the @ mention, whitespace removed
                 cleaned = output['text'].strip().split()
                 command = cleaned[0][1:]
 
