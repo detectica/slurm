@@ -1,5 +1,5 @@
 config = {
   'sqlite_db' : {
-      'dir' : '/home/ubuntu/opt/slurms/slurms.sqlite'
+      'dir' : '/home/jattenberg/opt/slurms/slurms.sqlite'
   }
 }
