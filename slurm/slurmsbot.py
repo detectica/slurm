@@ -58,7 +58,7 @@ def handle_command(command, details, channel, respond = True):
         response = learner.unlearn(details[0], content)
         
     elif command == "hostname":
-        response = "slurms coming to you live from: %s (%s)" % (subprocess.check_output("hostname -A",  shell=True).strip(), subprocess.check_output("hostname -i",  shell=True).strip())
+        response = "slurms coming to you live from: `%s (%s)`" % (subprocess.check_output("hostname -A",  shell=True).strip(), subprocess.check_output("hostname -i",  shell=True).strip())
     elif command == "write":
         writer = Writer()
         response = writer.get_writing(" ".join(details))
