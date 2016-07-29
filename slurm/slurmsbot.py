@@ -12,6 +12,7 @@ from plusser import Plusser
 from imgur import Imgur
 import youtube
 from writer import Writer
+from meme import Memer
 
 import subprocess
 
@@ -56,7 +57,19 @@ def handle_command(command, details, channel, respond = True):
             content = " ".join(details[1:])
     
         response = learner.unlearn(details[0], content)
-        
+
+    elif command == "meme":
+        memer = Memer()
+        if not details or len(details) == 0:
+            response = memer.list_templates()
+        else:
+            template = details.pop(0).strip()
+            parts = [x.strip() for x in " ".join(details).split(",")]
+            top = parts[0] if len(parts) > 0 else None
+            bottom = parts[1] if len(parts) > 1 else None
+
+            response = memer.get_meme(template, top, bottom)
+            
     elif command == "hostname":
         response = "slurms coming to you live from: `%s (%s)`" % (subprocess.check_output("hostname -A",  shell=True).strip(), subprocess.check_output("hostname -i",  shell=True).strip())
     elif command == "write":
