@@ -35,10 +35,11 @@ class Memer():
         return r.status_code == requests.codes.ok
     
     def get_meme(self,  template, top, bottom):
+        template = template.lstrip("<").rstrip(">")
         valid_templates = [x[0] for x in self.get_templates()]
         if template in valid_templates:
             return self.build_url(template, top, bottom)
         elif self.image_exists(template):
-            return self.build_url("custom", top, bottom)
+            return self.build_url("custom", top, bottom, template)
         else:
-            return "%s isn't a valid template. provide your own url or use one of:\n%s" % (template, self.list_templates()) 
+            return "%s isn't a valid template. provide your own url type `?meme` to see valid choices" % template
