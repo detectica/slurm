@@ -96,6 +96,10 @@ def handle_command(command, details, channel, respond = True):
         plusser = Plusser()
         response = plusser.leader_board()
 
+    elif command == "monthly_leaders" or command == "monthly_leader_board":
+        plusser = Plusser()
+        response = plusser.monthly_leader_board()
+
     elif command == "youtube":
         query = " ".join(details)
         videos = youtube.youtube_search(query)

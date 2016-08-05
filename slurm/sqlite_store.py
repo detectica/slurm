@@ -28,10 +28,10 @@ class Schema:
         return self.trigger_logic
 
 class Plusses(Schema):
-    name = "pluses"
+    name = "pluses_monthly"
     fields = ["name TEXT",
-              "count INT",
-              "reason TEXT"]
+              "reason TEXT",
+              "timestamp INT"]
 
     def __init__(self):
         Schema.__init__(self, Plusses.name, Plusses.fields)
@@ -105,7 +105,6 @@ class SqliteStore():
         con.execute(todo)
         con.commit()
 
-
     def get_commands(self, command):
         con = self.get_connection()
         todo = "SELECT content FROM %s WHERE command='%s'" % (self.learn.getName(), command)
@@ -132,34 +131,27 @@ class SqliteStore():
     """
       plusses commands
     """
-    def increment_plusses(self, name, reason = ""):
+    def increment_plusses(self, name, reason=None):
         con = self.get_connection()
-        todo = "SELECT count, reason FROM %s WHERE name='%s'" % (self.plusses.getName(), name)
+        if not reason:
+            reason = "NONE"
+        # insert new plus to table
+        todo = "INSERT INTO {} (name, reason, timestamp) VALUES ('{}', '{}', strftime('%s', 'now'))".format(self.plusses.getName(), name, reason)
+        logging.debug(todo)
+        con.execute(todo)
+        con.commit()
+        
+        todo = "SELECT count(*) FROM %s WHERE name='%s'" % (self.plusses.getName(), name)
         logging.debug(todo)
 
         cur = con.execute(todo)
         prior = cur.fetchall()
-
-        if len(prior) == 0:
-            count = 1
-            todo = "INSERT INTO %s (name, count, reason) VALUES ('%s', %s, '%s')" % (self.plusses.getName(), name, count, reason)
-            logging.debug(todo)
-            con.execute(todo)
-            con.commit()
-            return 1
-        else:
-            count = prior[0][0] + 1
-            reasons = prior[0][1] + ",%s" % reason
-
-            todo = "UPDATE %s SET count = %s, reason = '%s' WHERE name = '%s'" % (self.plusses.getName(), count, reasons, name)
-            logging.debug(todo)
-            con.execute(todo)
-            con.commit()
-            return count
-
-    def get_plusses(self, name):
+        count = prior[0][0]
+        return count
+        
+    def get_plusses(self, name, min_time=0):
         con = self.get_connection()
-        todo = "SELECT count FROM %s WHERE name = '%s'" % (self.plusses.getName(), name)
+        todo = "SELECT count(*) FROM %s WHERE name='%s' AND timestamp>%s" % (self.plusses.getName(), name, min_time)
 
         logging.debug(todo)
         cur = con.execute(todo)
@@ -171,9 +163,9 @@ class SqliteStore():
         else:
             return data[0][0]
 
-    def plus_leaders(self, limit=20):
+    def plus_leaders(self, min_time=0, max_time=999999999999999, limit=20):
         con = self.get_connection()
-        todo = "SELECT name, count FROM %s ORDER BY count DESC LIMIT %s" % (self.plusses.getName(), limit)
+        todo = "SELECT name, count FROM (SELECT name, count(*) AS  count FROM %s WHERE timestamp > %s GROUP BY name) c  ORDER BY count DESC LIMIT %s" % (self.plusses.getName(), min_time, limit)
 
         logging.debug(todo)
         cur = con.execute(todo)
