@@ -91,7 +91,7 @@ def handle_command(command, details, channel, respond = True):
     elif command == "plusses":
         plusser = Plusser()
         response = plusser.get(details[0])
-
+        
     elif command == "leaders" or command == "leader_board":
         plusser = Plusser()
         response = plusser.leader_board()

@@ -30,5 +30,3 @@ class Plusser():
         today = datetime.date.today()
         start_time = datetime.date(today.year, today.month, 1)
         return self.leader_board(start_time.strftime("%s"))
-
-        
