@@ -27,6 +27,15 @@ class Schema:
     def getTriggers(self):
         return self.trigger_logic
 
+class Logs(Schema):
+    name = "chat_logs"
+    fields = ["content TEXT",
+              "timestamp INT"]
+
+    def __init__(self):
+        Schema.__init__(self, Logs.name, Logs.fields)
+
+        
 class Plusses(Schema):
     name = "pluses_monthly"
     fields = ["name TEXT",
@@ -51,10 +60,12 @@ class SqliteStore():
 
         self.learn = self.setupTable(Learn())
         self.plusses = self.setupTable(Plusses())
-
+        self.logs = self.setupTable(Logs())
+        
         self.tables = {
             'learn':self.learn,
-            'plusses':self.plusses
+            'plusses':self.plusses,
+            'logs':self.logs
         }
 
     def get_connection(self):
@@ -172,3 +183,12 @@ class SqliteStore():
         con.commit()
 
         return [(x[0], x[1]) for x in cur.fetchall()]
+
+
+    def log_content(self, content):
+        con = self.get_connection()
+        todo = "INSERT INTO {} (content, timestamp) VALUES ('{}', strftime('%s', 'now'))".format(self.logs.getName(), content)
+
+        logging.debug(todo)
+        con.execute(todo)
+        con.commit()

@@ -3,10 +3,11 @@
 import os
 import time
 from slackclient import SlackClient
-import sqlite3
+import json
 import logging
 import sys
 
+from sqlite_store import SqliteStore
 from learner import Learner
 from plusser import Plusser
 from imgur import Imgur
@@ -24,6 +25,7 @@ import subprocess
 # starterbot's ID as an environment variable
 BOT_ID = str(os.environ.get("BOT_ID"))
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
+READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
 
 def pipe(command, details, channel):    
     details_string = " ".join(details)
@@ -152,11 +154,17 @@ if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s %(message)s',
                         stream=sys.stdout,
                         level=logging.DEBUG)
-    READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
+    sqlite = SqliteStore()
+    
     if slack_client.rtm_connect():
         logging.info("StarterBot connected and running!")
         while True:
-            command, details, channel = parse_slack_output(slack_client.rtm_read())
+            content = slack_client.rtm_read()
+            if content and len(content) > 0:
+                for output in content:
+                    if output and 'text' in output:
+                        sqlite.log_content(json.dumps(output))
+            command, details, channel = parse_slack_output(content)
 
             if command and channel:
                 handle_command(command, details, channel)
