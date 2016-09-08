@@ -100,7 +100,10 @@ def handle_command(command, details, channel, respond = True):
 
     elif command == "monthly_leaders" or command == "monthly_leader_board":
         plusser = Plusser()
-        response = plusser.monthly_leader_board()
+        months_ago = 0
+        if details and len(details) > 0:
+            months_ago = details[0]
+        response = plusser.monthly_leader_board(months_ago)
 
     elif command == "youtube":
         query = " ".join(details)
@@ -160,10 +163,12 @@ if __name__ == "__main__":
         logging.info("StarterBot connected and running!")
         while True:
             content = slack_client.rtm_read()
+            """          
             if content and len(content) > 0:
                 for output in content:
                     if output and 'text' in output:
                         sqlite.log_content(json.dumps(output))
+            """
             command, details, channel = parse_slack_output(content)
 
             if command and channel:

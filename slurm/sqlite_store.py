@@ -174,9 +174,9 @@ class SqliteStore():
         else:
             return data[0][0]
 
-    def plus_leaders(self, min_time=0, limit=20):
+    def plus_leaders(self, min_time=0, max_time=9999999999999999, limit=20):
         con = self.get_connection()
-        todo = "SELECT name, count FROM (SELECT name, count(*) AS  count FROM %s WHERE timestamp > %s GROUP BY name) c  ORDER BY count DESC LIMIT %s" % (self.plusses.getName(), min_time, limit)
+        todo = "SELECT name, count FROM (SELECT name, count(*) AS  count FROM %s WHERE timestamp > %s AND timestamp <= %s GROUP BY name) c  ORDER BY count DESC LIMIT %s" % (self.plusses.getName(), min_time, max_time, limit)
 
         logging.debug(todo)
         cur = con.execute(todo)
