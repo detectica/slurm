@@ -4,12 +4,12 @@ from urllib import unquote_plus, quote
 import requests
 
 
-BASE_URL = "http://memegen.link"
+BASE_URL = "https://memegen.link"
 
 class Memer():
 
     def get_templates(self):
-        temp_url = BASE_URL + "/templates/"
+        temp_url = BASE_URL + "/api/templates/"
         response = requests.get(temp_url).json()
 
         data = [(v.replace(temp_url, ""), k) for k, v in response.items()]
