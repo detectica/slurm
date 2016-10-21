@@ -6,9 +6,16 @@ class Learner():
         self.sqlite = SqliteStore()
 
     def learn(self, command, content):
-        self.sqlite.learn_command(command, content)
+        self.sqlite.learn_command(command, content.replace("'", "''"))
         return "ok, learned %s" % command
 
+    def list(self, command):
+        contents = self.sqlite.get_commands(command)
+        if contents:
+            return "Ok, here's %s:\n%s" % (command, "\n".join(["(%s) %s" % (j+1, k) for j,k in zip(range(len(contents)), contents)]))
+        else:
+            return None
+        
     def get(self, command):
         contents = self.sqlite.get_commands(command)
         if contents:

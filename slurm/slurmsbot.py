@@ -59,7 +59,9 @@ def handle_command(command, details, channel, respond = True):
             content = " ".join(details[1:])
     
         response = learner.unlearn(details[0], content)
-
+    elif command == "list":
+        learner = Learner()
+        response = learner.list(details[0])
     elif command == "meme":
         memer = Memer()
         if not details or len(details) == 0:
