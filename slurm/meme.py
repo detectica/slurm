@@ -12,7 +12,7 @@ class Memer():
         temp_url = BASE_URL + "/api/templates/"
         response = requests.get(temp_url).json()
 
-        data = [(v.replace(temp_url, ""), k) for k, v in response.items()]
+        data = [(v.encode('ascii', 'ignore').replace(temp_url, ""), k.encode('ascii', 'ignore')) for k, v in response.items()]
         data.sort(key = lambda tup: tup[0])
         return data
 
