@@ -8,6 +8,7 @@ class Plusser():
         self.sqlite = SqliteStore()
 
     def plus(self, name, reason = ""):
+        name = name.lower()
         count = self.sqlite.increment_plusses(name, reason)
         logging.info("a plus for %s")
         if count == 1:
@@ -16,6 +17,7 @@ class Plusser():
             return "another plus for %s! %s total" % (name, count)
 
     def get(self, name):
+        name = name.lower()
         count = self.sqlite.get_plusses(name)
 
         if count == 0:
