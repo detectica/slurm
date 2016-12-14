@@ -160,9 +160,9 @@ class SqliteStore():
         count = prior[0][0]
         return count
         
-    def get_plusses(self, name, min_time=0):
+    def get_plusses(self, name, min_time=0, max_time=9999999999999999):
         con = self.get_connection()
-        todo = "SELECT count(*) FROM %s WHERE name='%s' AND timestamp>%s" % (self.plusses.getName(), name, min_time)
+        todo = "SELECT count(*) FROM %s WHERE name='%s' AND timestamp>%s AND timestamp<%s" % (self.plusses.getName(), name, min_time, max_time)
 
         logging.debug(todo)
         cur = con.execute(todo)
