@@ -162,7 +162,7 @@ if __name__ == "__main__":
     sqlite = SqliteStore()
     
     if slack_client.rtm_connect():
-        logging.info("StarterBot connected and running!")
+        logging.info("slurms is alive!")
         while True:
             content = slack_client.rtm_read()
             """          
