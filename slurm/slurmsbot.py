@@ -56,12 +56,14 @@ def handle_command(command, details, channel, respond = True):
         learner = Learner()
         content = None
         if len(details) > 1:
-            content = " ".join(details[1:])
-    
+            content = " ".join(details[1:])    
         response = learner.unlearn(details[0], content)
     elif command == "list":
         learner = Learner()
         response = learner.list(details[0])
+    elif command == "cowsay":
+        out = subprocess.check_output(['cowsay', " ".join(details)])
+        response = "```" + out + "```"
     elif command == "meme":
         memer = Memer()
         if not details or len(details) == 0:
