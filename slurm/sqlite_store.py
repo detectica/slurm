@@ -116,6 +116,16 @@ class SqliteStore():
         con.execute(todo)
         con.commit()
 
+    def get_all_commands(self):
+        con = self.get_connection()
+        todo = "SELECT DISTINCT(command) from %s" % self.learn.getName()
+        logging.debug(todo)
+        cur = con.execute(todo)
+
+        con.commit()
+
+        return [x[0] for x in cur.fetchall()]
+
     def get_commands(self, command):
         con = self.get_connection()
         todo = "SELECT content FROM %s WHERE command='%s'" % (self.learn.getName(), command)

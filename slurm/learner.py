@@ -9,6 +9,13 @@ class Learner():
         self.sqlite.learn_command(command, content.replace("'", "''"))
         return "ok, learned %s" % command
 
+    def list_commands(self):
+        contents = self.sqlite.get_all_commands()
+        if contents:
+            return "these are the commands I know:\n%s" % "\n".join(contents)
+        else:
+            return None
+
     def list(self, command):
         contents = self.sqlite.get_commands(command)
         if contents:

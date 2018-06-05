@@ -14,6 +14,7 @@ from imgur import Imgur
 import youtube
 from writer import Writer
 from meme import Memer
+from doom import Doom
 
 import subprocess
 
@@ -58,6 +59,9 @@ def handle_command(command, details, channel, respond = True):
         if len(details) > 1:
             content = " ".join(details[1:])    
         response = learner.unlearn(details[0], content)
+    elif command == "commands":
+        learner = Learner()
+        response = learner.list_commands()
     elif command == "list":
         learner = Learner()
         response = learner.list(details[0])
@@ -120,6 +124,9 @@ def handle_command(command, details, channel, respond = True):
         response = " ".join(details)
     elif command == "pipe":
         pipe(command, details, channel)
+    elif command == "doom":
+        doom = Doom()
+        response = doom.doom(details)
     else:
         """
           see if a randomly entered command is something that was previously learned

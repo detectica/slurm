@@ -20,7 +20,9 @@ class Memer():
         return "\n".join(["`{0}` {1}".format(t[0], t[1])  for t in self.get_templates()])
 
     def build_url(self, template, top, bottom, alt = None):
-        path = "/{0}/{1}/{2}.jpg".format(template, top or "_", bottom or "_").replace(" ", "_")
+        top_url = top.replace("?", "~q") if top else "_"
+        bottom_url = bottom.replace("?", "~q") if bottom else "_"
+        path = "/{0}/{1}/{2}.jpg".format(template,  top_url, bottom_url).replace(" ", "_")
 
         if alt:
             path = path + "?alt={}".format(alt)
